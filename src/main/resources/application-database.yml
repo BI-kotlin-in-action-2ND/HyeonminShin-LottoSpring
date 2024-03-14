@@ -1,0 +1,56 @@
+spring:
+  jpa:
+    open-in-view: false
+
+---
+spring:
+  config.activate.on-profile: prod
+
+  datasource:
+    url: jdbc:h2:tcp://localhost/~/works/h2db/lotto
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+    hibernate:
+      ddl-auto: validate
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql: trace
+    org.hibernate.orm.jdbc.bind: trace
+
+---
+spring:
+  config.activate.on-profile: test
+
+  datasource:
+    url: jdbc:h2:tcp://localhost/~/works/h2db/test
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+    hibernate:
+      ddl-auto: create
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql: trace
+    org.hibernate.orm.jdbc.bind: trace
+
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: true
