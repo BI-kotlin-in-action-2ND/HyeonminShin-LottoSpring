@@ -8,13 +8,14 @@ import jakarta.validation.constraints.Positive
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.net.URI
 
 @Validated
 @RestController
@@ -28,8 +29,8 @@ class UserController(
         @RequestBody
         userCreateRequest: UserCreateRequest,
     ): ResponseEntity<UserResponse> {
-        val response = userService.createUser(userCreateRequest)
-        return ResponseEntity.ok(response)
+        val userId = userService.createUser(userCreateRequest)
+        return ResponseEntity.created(URI.create("/api/v1/user/$userId")).build()
     }
 
     @GetMapping("/{userId}")
@@ -42,26 +43,26 @@ class UserController(
         return ResponseEntity.ok(response)
     }
 
-    @PutMapping("/{userId}/addMoney")
+    @PatchMapping("/{userId}/addMoney")
     fun addUserMoney(
         @Positive(message = "유저 ID는 0보다 커야 합니다.")
         @PathVariable("userId")
         userId: Long,
         @Positive(message = "더할 돈의 값은 양수여야 합니다.")
-        @RequestParam("charge", defaultValue = "0", required = false)
+        @RequestParam("charge")
         charge: Int,
     ): ResponseEntity<Void> {
         userService.addUserMoney(userId, charge)
         return ResponseEntity.noContent().build()
     }
 
-    @PutMapping("/{userId}/withdrawMoney")
+    @PatchMapping("/{userId}/withdrawMoney")
     fun withdrawUserMoney(
         @Positive(message = "유저 ID는 0보다 커야 합니다.")
         @PathVariable("userId")
         userId: Long,
         @Positive(message = "출금할 돈의 값은 양수여야 합니다.")
-        @RequestParam("charge", defaultValue = "0", required = false)
+        @RequestParam("charge")
         charge: Int,
     ): ResponseEntity<Void> {
         userService.withdrawUserMoney(userId, charge)
