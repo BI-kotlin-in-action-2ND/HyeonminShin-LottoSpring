@@ -11,7 +11,7 @@ import com.hm.hyeonminshinlottospring.support.createAdmin
 import com.hm.hyeonminshinlottospring.support.createLotto
 import com.hm.hyeonminshinlottospring.support.createUser
 import com.hm.hyeonminshinlottospring.support.test.BaseTests.IntegrationTest
-import io.kotest.assertions.throwables.shouldThrowAny
+import io.kotest.assertions.fail
 import io.kotest.core.spec.style.ExpectSpec
 import io.kotest.matchers.shouldBe
 import org.springframework.transaction.annotation.Transactional
@@ -44,12 +44,17 @@ class WinningLottoRepositoryTest(
 
             context("당첨 로또 번호 조회") {
                 expect("존재하는 라운드 조회") {
-                    val result = winningLottoRepository.getByRound(lotto1.round)
-                    result.user.userRole shouldBe UserRole.ROLE_ADMIN
+                    val result = winningLottoRepository.findByRound(lotto1.round)
+                    if (result != null) {
+                        result.lotto.user.userRole shouldBe UserRole.ROLE_ADMIN
+                    } else {
+                        fail("존재하는 라운드를 제공해주세요.")
+                    }
                 }
 
                 expect("존재하지 않는 라운드 조회") {
-                    shouldThrowAny { winningLottoRepository.getByRound(TEST_INVALID_ROUND) }
+                    val result = winningLottoRepository.findByRound(TEST_INVALID_ROUND)
+                    result shouldBe null
                 }
             }
         },
