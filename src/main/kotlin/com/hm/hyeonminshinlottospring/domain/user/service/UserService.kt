@@ -1,13 +1,9 @@
 package com.hm.hyeonminshinlottospring.domain.user.service
 
-import com.hm.hyeonminshinlottospring.domain.user.domain.User
-import com.hm.hyeonminshinlottospring.domain.user.domain.UserRole
 import com.hm.hyeonminshinlottospring.domain.user.dto.UserCreateRequest
 import com.hm.hyeonminshinlottospring.domain.user.dto.UserResponse
 import com.hm.hyeonminshinlottospring.domain.user.repository.UserRepository
-import com.hm.hyeonminshinlottospring.domain.user.repository.existsByUserId
-import com.hm.hyeonminshinlottospring.domain.user.repository.getByUserId
-import jakarta.persistence.EntityExistsException
+import com.hm.hyeonminshinlottospring.domain.user.repository.findByUserId
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -15,24 +11,17 @@ import org.springframework.transaction.annotation.Transactional
 class UserService(
     private val userRepository: UserRepository,
 ) {
+    // TODO: 나중엔 밖에서 Admin "만들지도, 접근하지도 못하도록" 인증 시스템 도입하기
     @Transactional
-    fun createUser(request: UserCreateRequest): UserResponse {
-        validateUserNameIsDuplicated(request)
-        val user =
-            request.toEntity(
-                request.userName,
-                request.money,
-                UserRole.ROLE_USER,
-            )
-        val savedUser = userRepository.save(user)
-        return getUserResponse(savedUser)
+    fun createUser(request: UserCreateRequest): Long {
+        val savedUser = userRepository.save(request.toEntity())
+        return savedUser.id
     }
 
     @Transactional(readOnly = true)
     fun getUserInformation(userId: Long): UserResponse {
-        validateUserIdExistence(userId)
-        val user = userRepository.getByUserId(userId)
-        return getUserResponse(user)
+        val user = userRepository.findByUserId(userId)
+        return UserResponse.from(user)
     }
 
     @Transactional
@@ -40,8 +29,7 @@ class UserService(
         userId: Long,
         addMoney: Int,
     ): Int {
-        validateUserIdExistence(userId)
-        val user = userRepository.getByUserId(userId)
+        val user = userRepository.findByUserId(userId)
         return user.addMoney(addMoney)
     }
 
@@ -50,28 +38,9 @@ class UserService(
         userId: Long,
         withdrawMoney: Int,
     ): Int {
-        validateUserIdExistence(userId)
-        val user = userRepository.getByUserId(userId)
+        val user = userRepository.findByUserId(userId)
         return user.withdrawMoney(withdrawMoney)
     }
 
-    private fun getUserResponse(savedUser: User) =
-        UserResponse.from(
-            savedUser.id,
-            savedUser.userName,
-            savedUser.userRole,
-            savedUser.money,
-        )
-
-    private fun validateUserIdExistence(userId: Long) {
-        if (!userRepository.existsByUserId(userId)) {
-            throw NoSuchElementException("$userId: 해당 사용자가 존재하지 않습니다.")
-        }
-    }
-
-    private fun validateUserNameIsDuplicated(request: UserCreateRequest) {
-        if (userRepository.existsByUserName(request.userName)) {
-            throw EntityExistsException("${request.userName}: 이미 존재하는 유저 이름입니다.")
-        }
-    }
+    // TODO: User 삭제 추가
 }
