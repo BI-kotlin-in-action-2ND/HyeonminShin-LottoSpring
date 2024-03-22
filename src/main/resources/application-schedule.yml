@@ -1,0 +1,12 @@
+spring:
+  config.activate.on-profile: prod
+
+schedule:
+  cron: 0 0/10 * * * *
+
+---
+spring:
+  config.activate.on-profile: test
+
+schedule:
+  cron: 0/30 * * * * *

@@ -1,0 +1,40 @@
+[[Lotto-API]]
+= *Lotto API*
+
+[[로또-생성-API]]
+== *1. 로또 생성 API*
+
+=== *1-1 성공 - 랜덤 요청*
+
+operation::lotto-controller-test/create-lottos-success-random[snippets='http-request,query-parameters,path-parameters,request-headers,http-response']
+
+=== *1-2 성공 - 수동 요청*
+
+operation::lotto-controller-test/create-lottos-success-manual[snippets='http-request,query-parameters,path-parameters,request-headers,http-response']
+
+=== *1-3 실패 - 음수 유저 id*
+
+operation::lotto-controller-test/create-lottos-fail-user-id-negative[snippets='http-request,query-parameters,path-parameters,request-headers,http-response']
+
+=== *1-4 실패 - 존재하지 않는 유저 id*
+
+operation::lotto-controller-test/create-lottos-fail-user-id-not-exist[snippets='http-request,query-parameters,path-parameters,request-headers,http-response']
+
+=== *1-5 실패 - 음수의 투입 금액*
+
+operation::lotto-controller-test/create-lottos-fail-inserted-money-negative[snippets='http-request,query-parameters,path-parameters,request-headers,http-response']
+
+
+=== *1-6 실패 - 유저의 소지 금액보다 많은 투입 금액*
+
+operation::lotto-controller-test/create-lottos-fail-inserted-money-bigger-than-having[snippets='http-request,query-parameters,path-parameters,request-headers,http-response']
+
+
+[[로또-조회-API]]
+== *2. 로또 조회 API*
+
+=== *2-1 성공*
+
+//operation::lotto-controller-test/[snippets='http-request,query-parameters,path-parameters,request-headers,http-response']
+
+

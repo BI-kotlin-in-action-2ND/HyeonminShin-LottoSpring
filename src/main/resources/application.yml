@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: LottoSpring
+  profiles:
+    include:
+      - database
+      - schedule
+  lifecycle:
+    timeout-per-shutdown-phase: 3s
+
+server:
+  error:
+    whitelabel:
+      enabled: false
+  shutdown: graceful
