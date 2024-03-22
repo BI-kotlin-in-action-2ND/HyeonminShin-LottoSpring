@@ -1,13 +1,12 @@
 package com.hm.hyeonminshinlottospring
 
+import com.hm.hyeonminshinlottospring.support.test.BaseTests.IntegrationTest
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.context.SpringBootTest
 
-@SpringBootTest
+@IntegrationTest
 class HyeonminShinLottoSpringApplicationTests {
 
-	@Test
-	fun contextLoads() {
-	}
-
+    @Test
+    fun contextLoads() {
+    }
 }
