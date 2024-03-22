@@ -2,38 +2,61 @@ package com.hm.hyeonminshinlottospring.domain.lotto.dto
 
 import com.hm.hyeonminshinlottospring.domain.lotto.domain.GenerateMode
 import com.hm.hyeonminshinlottospring.domain.lotto.domain.Lotto
-import com.hm.hyeonminshinlottospring.domain.lotto.domain.LottoNumber
+import com.hm.hyeonminshinlottospring.domain.lotto.domain.info.LottoPrice
+import com.hm.hyeonminshinlottospring.domain.lotto.service.generator.RandomLottoNumbersGenerator
 import com.hm.hyeonminshinlottospring.domain.user.domain.User
 import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.Positive
 
 data class LottoCreateRequest(
-    @field:NotNull(message = "라운드 정보는 필수 입력 값입니다.")
-    val round: Int,
+    @field:NotNull(message = "유저 ID는 필수 입력 값입니다.")
+    @field:Positive(message = "유저 ID는 0보다 커야 합니다.")
+    val userId: Long,
     @field:NotNull(message = "생성 모드는 필수 입력 값입니다.")
     val mode: GenerateMode,
-    @field:NotNull(message = "로또 생성 개수는 필수 입력 값입니다.")
-    val generateCount: Int,
-    val numbers: List<List<Int>>?,
+    @field:NotNull(message = "투입할 돈은 필수 입력 값입니다.")
+    @field:Positive(message = "투입할 돈은 양수여야 합니다.")
+    val insertedMoney: Int,
+    val numbers: List<List<Int>>? = null,
 ) {
-    @JvmName("entityWithInt")
-    fun toEntity(
-        round: Int,
+    fun toEntities(
         user: User,
-        numbers: Collection<Int>,
-    ) = Lotto(
-        round = round,
-        user = user,
-        numbers = numbers,
-    )
+        round: Int,
+        randomLottoNumbersGenerator: RandomLottoNumbersGenerator,
+    ) = createLottosWithMode(user, round, randomLottoNumbersGenerator)
 
-    @JvmName("entityWithLottoNumber")
-    fun toEntity(
-        round: Int,
+    private fun createLottosWithMode(
         user: User,
-        numbers: Collection<LottoNumber>,
-    ) = Lotto(
-        round = round,
-        user = user,
-        numbers = numbers.toSortedSet(),
-    )
+        round: Int,
+        randomLottoNumbersGenerator: RandomLottoNumbersGenerator,
+    ): List<Lotto> {
+        val result = mutableListOf<Lotto>()
+        val generateCount = this.insertedMoney / LottoPrice.PER_PRICE
+        when (this.mode) {
+            GenerateMode.RANDOM ->
+                repeat(generateCount) {
+                    result.add(
+                        Lotto(
+                            round = round,
+                            user = user,
+                            numbers = randomLottoNumbersGenerator.generate(),
+                        ),
+                    )
+                }
+
+            GenerateMode.MANUAL -> {
+                val numbersIterator = this.numbers?.listIterator() ?: listOf<List<Int>>().listIterator()
+                while (numbersIterator.hasNext()) {
+                    result.add(
+                        Lotto(
+                            round = round,
+                            user = user,
+                            numbers = numbersIterator.next(),
+                        ),
+                    )
+                }
+            }
+        }
+        return result.toList()
+    }
 }
