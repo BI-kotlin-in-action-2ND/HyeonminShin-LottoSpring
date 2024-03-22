@@ -15,16 +15,14 @@ spring:
   jpa:
     properties:
       hibernate:
-        format_sql: true
         show_sql: true
     hibernate:
       ddl-auto: validate
 
 logging:
   level:
-    org.hibernate.SQL: debug
-    org.hibernate.type.descriptor.sql: trace
-    org.hibernate.orm.jdbc.bind: trace
+    org:
+      hibernate: info
 
 ---
 spring:
@@ -44,11 +42,10 @@ spring:
     hibernate:
       ddl-auto: create
 
-logging:
-  level:
-    org.hibernate.SQL: debug
-    org.hibernate.type.descriptor.sql: trace
-    org.hibernate.orm.jdbc.bind: trace
+#logging:
+#  level:
+#    org:
+#      hibernate: trace
 
 decorator:
   datasource:
