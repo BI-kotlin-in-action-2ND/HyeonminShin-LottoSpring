@@ -1,24 +1,19 @@
 package com.hm.hyeonminshinlottospring.domain.user.dto
 
+import com.hm.hyeonminshinlottospring.domain.user.domain.User
 import com.hm.hyeonminshinlottospring.domain.user.domain.UserRole
 
 data class UserResponse(
-    val userId: Long?,
     val userName: String,
     val userRole: UserRole,
     val money: Int,
 ) {
     companion object {
-        fun from(
-            userId: Long?,
-            userName: String,
-            userRole: UserRole,
-            money: Int,
-        ) = UserResponse(
-            userId,
-            userName,
-            userRole,
-            money,
-        )
+        fun from(user: User) =
+            UserResponse(
+                userName = user.userName,
+                userRole = user.userRole,
+                money = user.money,
+            )
     }
 }
