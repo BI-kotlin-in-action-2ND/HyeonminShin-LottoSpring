@@ -3,6 +3,7 @@ package com.hm.hyeonminshinlottospring.global.exception
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import jakarta.validation.ConstraintViolationException
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatusCode
@@ -27,8 +28,15 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
         status: HttpStatusCode,
         request: WebRequest,
     ): ResponseEntity<Any>? {
-        logger.error("[MethodArgumentNotValidException] ${ex.messages()}")
-        return getInvalidRequestResponse(ex.messages().joinToString())
+        logger.error("[MethodArgumentNotValidException], ex")
+        val bindingResult = ex.bindingResult
+        val stringBuilder = StringBuilder()
+        for (fieldError in bindingResult.fieldErrors) {
+            stringBuilder.append(fieldError.field).append(":")
+            stringBuilder.append(fieldError.defaultMessage)
+            stringBuilder.append(", ")
+        }
+        return getInvalidRequestResponse(stringBuilder.toString())
     }
 
     override fun handleHttpMessageNotReadable(
@@ -103,6 +111,7 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
         IllegalArgumentException::class,
         IllegalStateException::class,
         ConstraintViolationException::class,
+        DataIntegrityViolationException::class,
     )
     fun invalidRequestException(ex: RuntimeException): ResponseEntity<Any>? {
         logger.error("[InvalidRequestException]", ex)
@@ -123,10 +132,6 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
         val internalServerErrorCode = ErrorCode.INTERNAL_SERVER_ERROR
         return ResponseEntity.status(internalServerErrorCode.httpStatus)
             .body(ErrorResponse.of(internalServerErrorCode, ex.message))
-    }
-
-    private fun MethodArgumentNotValidException.messages(): List<String> {
-        return bindingResult.fieldErrors.map { "${it.field}: ${it.defaultMessage.orEmpty()}" }
     }
 
     private fun getInvalidRequestResponse(
