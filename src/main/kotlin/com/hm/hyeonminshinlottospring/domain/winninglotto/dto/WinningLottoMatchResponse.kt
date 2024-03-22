@@ -1,28 +1,25 @@
 package com.hm.hyeonminshinlottospring.domain.winninglotto.dto
 
+import com.hm.hyeonminshinlottospring.domain.lotto.domain.Lotto
 import com.hm.hyeonminshinlottospring.domain.lotto.domain.LottoNumber
-import java.util.SortedSet
+import com.hm.hyeonminshinlottospring.domain.lotto.domain.info.LottoRank
 
 class WinningLottoMatchResponse(
-    val numbers: SortedSet<LottoNumber>,
+    val numbers: LottoNumber,
     val matched: List<Int>,
-    val rank: Int,
     val rankString: String,
     val prize: Int,
 ) {
     companion object {
         fun from(
-            numbers: SortedSet<LottoNumber>,
+            lotto: Lotto,
             matched: List<Int>,
-            rank: Int,
-            rankString: String,
-            prize: Int,
+            rank: LottoRank,
         ) = WinningLottoMatchResponse(
-            numbers = numbers,
+            numbers = lotto.numbers,
             matched = matched,
-            rank = rank,
-            rankString = rankString,
-            prize = prize,
+            rankString = rank.rankString,
+            prize = rank.prize,
         )
     }
 }

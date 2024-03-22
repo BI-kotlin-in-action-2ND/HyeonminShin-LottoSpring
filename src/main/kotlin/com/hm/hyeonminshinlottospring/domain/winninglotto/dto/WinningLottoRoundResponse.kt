@@ -1,19 +1,17 @@
 package com.hm.hyeonminshinlottospring.domain.winninglotto.dto
 
 import com.hm.hyeonminshinlottospring.domain.lotto.domain.LottoNumber
-import java.util.SortedSet
+import com.hm.hyeonminshinlottospring.domain.winninglotto.domain.WinningLotto
 
 class WinningLottoRoundResponse(
     val round: Int,
-    val numbers: SortedSet<LottoNumber>,
+    val numbers: LottoNumber,
 ) {
     companion object {
-        fun from(
-            round: Int,
-            numbers: SortedSet<LottoNumber>,
-        ) = WinningLottoRoundResponse(
-            round = round,
-            numbers = numbers,
-        )
+        fun from(winningLotto: WinningLotto) =
+            WinningLottoRoundResponse(
+                round = winningLotto.round,
+                numbers = winningLotto.lotto.numbers,
+            )
     }
 }
