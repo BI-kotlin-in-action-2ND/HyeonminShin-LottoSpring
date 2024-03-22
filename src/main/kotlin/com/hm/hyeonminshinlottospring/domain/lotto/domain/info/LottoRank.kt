@@ -1,6 +1,6 @@
 package com.hm.hyeonminshinlottospring.domain.lotto.domain.info
 
-import com.hm.hyeonminshinlottospring.domain.lotto.domain.Lotto.Companion.NUM_OF_LOTTO_NUMBERS
+import com.hm.hyeonminshinlottospring.domain.lotto.domain.LottoNumber
 
 /**
  * **ordinal**: 등수를 나타내는 지표로 사용 from 0
@@ -14,6 +14,6 @@ enum class LottoRank(val rankString: String, val prize: Int) {
     ;
 
     companion object Checker {
-        fun getRank(countMatched: Int) = entries.getOrNull(NUM_OF_LOTTO_NUMBERS - countMatched) ?: LOSE
+        fun getRank(countMatched: Int) = entries.getOrNull(LottoNumber.NUM_OF_LOTTO_NUMBERS - countMatched) ?: LOSE
     }
 }
