@@ -14,34 +14,35 @@ import com.hm.hyeonminshinlottospring.support.createTotalMatchResponse
 import com.hm.hyeonminshinlottospring.support.createWinningLotto
 import com.hm.hyeonminshinlottospring.support.createWinningLottoRoundResponse
 import com.hm.hyeonminshinlottospring.support.test.BaseTests.UnitControllerTestEnvironment
-import com.hm.hyeonminshinlottospring.support.test.RestDocsHelpler
-import com.hm.hyeonminshinlottospring.support.test.RestDocsHelpler.Companion.createPathDocument
-import com.hm.hyeonminshinlottospring.support.test.RestDocsHelpler.Companion.responseBody
+import com.hm.hyeonminshinlottospring.support.test.RestDocsHelper
+import com.hm.hyeonminshinlottospring.support.test.RestDocsHelper.Companion.createPathDocument
+import com.hm.hyeonminshinlottospring.support.test.RestDocsHelper.Companion.responseBody
 import com.hm.hyeonminshinlottospring.support.test.example
 import com.hm.hyeonminshinlottospring.support.test.parameterDescription
 import com.hm.hyeonminshinlottospring.support.test.pathDescription
 import com.hm.hyeonminshinlottospring.support.test.type
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.DescribeSpec
-import io.mockk.every
+import io.mockk.coEvery
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.restdocs.ManualRestDocumentation
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders
 import org.springframework.restdocs.payload.JsonFieldType
 import org.springframework.restdocs.request.RequestDocumentation.pathParameters
 import org.springframework.restdocs.request.RequestDocumentation.queryParameters
+import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.web.context.WebApplicationContext
 
 @UnitControllerTestEnvironment
-@WebMvcTest(WinningLottoController::class)
+@WebMvcTest(controllers = [WinningLottoController::class])
 class WinningLottoControllerTest(
     private val context: WebApplicationContext,
     @MockkBean private val winningLottoService: WinningLottoService,
 ) : DescribeSpec(
     {
         val restDocumentation = ManualRestDocumentation()
-        val restDocMockMvc = RestDocsHelpler.generateRestDocMvc(context, restDocumentation)
+        val restDocMockMvc = RestDocsHelper.generateRestDocMockMvc(context, restDocumentation)
 
         beforeEach {
             restDocumentation.beforeTest(javaClass, it.name.testName)
@@ -54,15 +55,15 @@ class WinningLottoControllerTest(
                 val lotto = createLotto(user = admin)
                 val winningLotto = createWinningLotto(lotto)
                 val response = createWinningLottoRoundResponse(winningLotto)
-                every { winningLottoService.getWinningLottoByRound(TEST_ADMIN_USER_ID, TEST_ROUND) } returns response
+                coEvery { winningLottoService.getWinningLottoByRound(TEST_ADMIN_USER_ID, TEST_ROUND) } returns response
                 it("200 응답한다.") {
                     restDocMockMvc.perform(
                         RestDocumentationRequestBuilders
                             .get(targetUri, TEST_ROUND)
                             .param(USER_ID_PARAM, TEST_ADMIN_USER_ID.toString()),
-                    ).andExpect {
-                        status().isOk
-                    }.andDo {
+                    ).andExpect(
+                        status().isOk,
+                    ).andDo(
                         createPathDocument(
                             "get-winning-lotto-round-success-admin-current-round",
                             pathParameters(
@@ -75,8 +76,8 @@ class WinningLottoControllerTest(
                                 "round" type JsonFieldType.NUMBER description "조회한 라운드 정보" example TEST_ROUND,
                                 "numbers" type JsonFieldType.ARRAY description "해당 라운드의 당첨 번호 리스트" example lotto.numbers,
                             ),
-                        )
-                    }
+                        ),
+                    )
                 }
             }
 
@@ -85,15 +86,15 @@ class WinningLottoControllerTest(
                 val lotto = createLotto(user = admin)
                 val winningLotto = createWinningLotto(lotto)
                 val response = createWinningLottoRoundResponse(winningLotto)
-                every { winningLottoService.getWinningLottoByRound(TEST_USER_ID, TEST_ROUND) } returns response
+                coEvery { winningLottoService.getWinningLottoByRound(TEST_USER_ID, TEST_ROUND) } returns response
                 it("200 응답한다.") {
                     restDocMockMvc.perform(
                         RestDocumentationRequestBuilders
                             .get(targetUri, TEST_ROUND)
                             .param(USER_ID_PARAM, TEST_USER_ID.toString()),
-                    ).andExpect {
-                        status().isOk
-                    }.andDo {
+                    ).andExpect(
+                        status().isOk,
+                    ).andDo(
                         createPathDocument(
                             "get-winning-lotto-round-success-user-not-current-round",
                             pathParameters(
@@ -106,13 +107,13 @@ class WinningLottoControllerTest(
                                 "round" type JsonFieldType.NUMBER description "조회한 라운드 정보" example TEST_ROUND,
                                 "numbers" type JsonFieldType.ARRAY description "해당 라운드의 당첨 번호 리스트" example lotto.numbers,
                             ),
-                        )
-                    }
+                        ),
+                    )
                 }
             }
 
             context("현재 진행중인 라운드를 조회하는 일반 유저인 경우") {
-                every {
+                coEvery {
                     winningLottoService.getWinningLottoByRound(
                         TEST_USER_ID,
                         TEST_ROUND,
@@ -123,9 +124,9 @@ class WinningLottoControllerTest(
                         RestDocumentationRequestBuilders
                             .get(targetUri, TEST_ROUND)
                             .param(USER_ID_PARAM, TEST_USER_ID.toString()),
-                    ).andExpect {
-                        status().isBadRequest
-                    }.andDo {
+                    ).andExpect(
+                        status().isBadRequest,
+                    ).andDo(
                         createPathDocument(
                             "get-winning-lotto-round-fail-user-current-round",
                             pathParameters(
@@ -134,8 +135,8 @@ class WinningLottoControllerTest(
                             queryParameters(
                                 USER_ID_PARAM parameterDescription "조회하려는 일반 유저 ID" example TEST_USER_ID,
                             ),
-                        )
-                    }
+                        ),
+                    )
                 }
             }
 
@@ -145,9 +146,9 @@ class WinningLottoControllerTest(
                         RestDocumentationRequestBuilders
                             .get(targetUri, TEST_ROUND)
                             .param(USER_ID_PARAM, TEST_INVALID_USER_ID.toString()),
-                    ).andExpect {
-                        status().isBadRequest
-                    }.andDo {
+                    ).andExpect(
+                        status().isBadRequest,
+                    ).andDo(
                         createPathDocument(
                             "get-winning-lotto-round-fail-user-id-negative",
                             pathParameters(
@@ -156,8 +157,8 @@ class WinningLottoControllerTest(
                             queryParameters(
                                 USER_ID_PARAM parameterDescription "음수의 유저 ID" example TEST_INVALID_USER_ID,
                             ),
-                        )
-                    }
+                        ),
+                    )
                 }
             }
 
@@ -167,9 +168,9 @@ class WinningLottoControllerTest(
                         RestDocumentationRequestBuilders
                             .get(targetUri, TEST_INVALID_ROUND)
                             .param(USER_ID_PARAM, TEST_USER_ID.toString()),
-                    ).andExpect {
-                        status().isBadRequest
-                    }.andDo {
+                    ).andExpect(
+                        status().isBadRequest,
+                    ).andDo(
                         createPathDocument(
                             "get-winning-lotto-round-fail-round-negative",
                             pathParameters(
@@ -178,13 +179,13 @@ class WinningLottoControllerTest(
                             queryParameters(
                                 USER_ID_PARAM parameterDescription "유저 ID" example TEST_USER_ID,
                             ),
-                        )
-                    }
+                        ),
+                    )
                 }
             }
 
             context("존재하지 않는 라운드가 주어진 경우") {
-                every {
+                coEvery {
                     winningLottoService.getWinningLottoByRound(
                         TEST_USER_ID,
                         TEST_NOT_EXIST_ROUND,
@@ -195,9 +196,9 @@ class WinningLottoControllerTest(
                         RestDocumentationRequestBuilders
                             .get(targetUri, TEST_NOT_EXIST_ROUND)
                             .param(USER_ID_PARAM, TEST_USER_ID.toString()),
-                    ).andExpect {
-                        status().isNotFound
-                    }.andDo {
+                    ).andExpect(
+                        status().isNotFound,
+                    ).andDo(
                         createPathDocument(
                             "get-winning-lotto-round-fail-round-not-exist",
                             pathParameters(
@@ -206,8 +207,8 @@ class WinningLottoControllerTest(
                             queryParameters(
                                 USER_ID_PARAM parameterDescription "유저 ID" example TEST_USER_ID,
                             ),
-                        )
-                    }
+                        ),
+                    )
                 }
             }
         }
@@ -216,15 +217,15 @@ class WinningLottoControllerTest(
             val targetUri = "/api/v1/winninglotto/{round}/match"
             context("유효한 데이터가 주어진 경우") {
                 val response = createTotalMatchResponse()
-                every { winningLottoService.matchUserLottoByRound(TEST_USER_ID, TEST_ROUND) } returns response
+                coEvery { winningLottoService.matchUserLottoByRound(TEST_USER_ID, TEST_ROUND) } returns response
                 it("200 응답한다.") {
                     restDocMockMvc.perform(
                         RestDocumentationRequestBuilders
                             .get(targetUri, TEST_ROUND)
                             .param(USER_ID_PARAM, TEST_USER_ID.toString()),
-                    ).andExpect {
-                        status().isOk
-                    }.andDo {
+                    ).andExpect(
+                        status().isOk,
+                    ).andDo(
                         createPathDocument(
                             "match-user-lotto-success",
                             pathParameters(
@@ -240,8 +241,8 @@ class WinningLottoControllerTest(
                                 "matchResult[].rankString" type JsonFieldType.STRING description "등수 문자열" example response.matchResult[0].rankString,
                                 "matchResult[].prize" type JsonFieldType.NUMBER description "얻은 상금" example response.matchResult[0].prize,
                             ),
-                        )
-                    }
+                        ),
+                    )
                 }
             }
 
@@ -251,9 +252,9 @@ class WinningLottoControllerTest(
                         RestDocumentationRequestBuilders
                             .get(targetUri, TEST_ROUND)
                             .param(USER_ID_PARAM, TEST_INVALID_USER_ID.toString()),
-                    ).andExpect {
-                        status().isBadRequest
-                    }.andDo {
+                    ).andExpect(
+                        status().isBadRequest,
+                    ).andDo(
                         createPathDocument(
                             "match-user-lotto-fail-user-id-negative",
                             pathParameters(
@@ -262,8 +263,8 @@ class WinningLottoControllerTest(
                             queryParameters(
                                 USER_ID_PARAM parameterDescription "음수의 유저 ID" example TEST_INVALID_USER_ID,
                             ),
-                        )
-                    }
+                        ),
+                    )
                 }
             }
 
@@ -273,9 +274,9 @@ class WinningLottoControllerTest(
                         RestDocumentationRequestBuilders
                             .get(targetUri, TEST_INVALID_ROUND)
                             .param(USER_ID_PARAM, TEST_USER_ID.toString()),
-                    ).andExpect {
-                        status().isBadRequest
-                    }.andDo {
+                    ).andExpect(
+                        status().isBadRequest,
+                    ).andDo(
                         createPathDocument(
                             "match-user-lotto-fail-round-negative",
                             pathParameters(
@@ -284,13 +285,13 @@ class WinningLottoControllerTest(
                             queryParameters(
                                 USER_ID_PARAM parameterDescription "조회할 유저 ID" example TEST_USER_ID,
                             ),
-                        )
-                    }
+                        ),
+                    )
                 }
             }
 
             context("존재하지 않는 라운드가 주어진 경우") {
-                every {
+                coEvery {
                     winningLottoService.matchUserLottoByRound(
                         TEST_USER_ID,
                         TEST_NOT_EXIST_ROUND,
@@ -301,9 +302,9 @@ class WinningLottoControllerTest(
                         RestDocumentationRequestBuilders
                             .get(targetUri, TEST_NOT_EXIST_ROUND)
                             .param(USER_ID_PARAM, TEST_USER_ID.toString()),
-                    ).andExpect {
-                        status().isBadRequest
-                    }.andDo {
+                    ).andExpect(
+                        status().isBadRequest,
+                    ).andDo(
                         createPathDocument(
                             "match-user-lotto-fail-round-not-exist",
                             pathParameters(
@@ -312,13 +313,13 @@ class WinningLottoControllerTest(
                             queryParameters(
                                 USER_ID_PARAM parameterDescription "조회할 유저 ID" example TEST_USER_ID,
                             ),
-                        )
-                    }
+                        ),
+                    )
                 }
             }
 
             context("유효한 라운드지만, Admin 유저 ID가 주어진 경우") {
-                every {
+                coEvery {
                     winningLottoService.matchUserLottoByRound(
                         TEST_ADMIN_USER_ID,
                         TEST_ROUND,
@@ -329,9 +330,9 @@ class WinningLottoControllerTest(
                         RestDocumentationRequestBuilders
                             .get(targetUri, TEST_ROUND)
                             .param(USER_ID_PARAM, TEST_ADMIN_USER_ID.toString()),
-                    ).andExpect {
-                        status().isBadRequest
-                    }.andDo {
+                    ).andExpect(
+                        status().isBadRequest,
+                    ).andDo(
                         createPathDocument(
                             "match-user-lotto-fail-user-id-admin",
                             pathParameters(
@@ -340,13 +341,13 @@ class WinningLottoControllerTest(
                             queryParameters(
                                 USER_ID_PARAM parameterDescription "Admin 유저 ID" example TEST_ADMIN_USER_ID,
                             ),
-                        )
-                    }
+                        ),
+                    )
                 }
             }
 
             context("일반 유저 ID지만, 현재 진행 중인 라운드를 조회하려는 경우") {
-                every {
+                coEvery {
                     winningLottoService.matchUserLottoByRound(
                         TEST_USER_ID,
                         TEST_ROUND,
@@ -357,9 +358,9 @@ class WinningLottoControllerTest(
                         RestDocumentationRequestBuilders
                             .get(targetUri, TEST_ROUND)
                             .param(USER_ID_PARAM, TEST_USER_ID.toString()),
-                    ).andExpect {
-                        status().isBadRequest
-                    }.andDo {
+                    ).andExpect(
+                        status().isBadRequest,
+                    ).andDo(
                         createPathDocument(
                             "match-user-lotto-fail-user-access-current-round",
                             pathParameters(
@@ -368,8 +369,8 @@ class WinningLottoControllerTest(
                             queryParameters(
                                 USER_ID_PARAM parameterDescription "조회할 일반 유저 ID" example TEST_USER_ID,
                             ),
-                        )
-                    }
+                        ),
+                    )
                 }
             }
         }

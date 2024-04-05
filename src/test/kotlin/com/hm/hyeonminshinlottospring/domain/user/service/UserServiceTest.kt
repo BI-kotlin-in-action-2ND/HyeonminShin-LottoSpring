@@ -7,6 +7,7 @@ import com.hm.hyeonminshinlottospring.support.TEST_MONEY_10
 import com.hm.hyeonminshinlottospring.support.TEST_USER_ID
 import com.hm.hyeonminshinlottospring.support.createUser
 import com.hm.hyeonminshinlottospring.support.createUserCreateRequest
+import com.hm.hyeonminshinlottospring.support.createUserMoneyPatchRequest
 import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.assertions.throwables.shouldThrowExactly
 import io.kotest.core.spec.style.DescribeSpec
@@ -45,19 +46,21 @@ class UserServiceTest : DescribeSpec(
         describe("addUserMoney") {
             val user = createUser()
             context("유효한 데이터가 주어진 경우") {
+                val request = createUserMoneyPatchRequest()
                 every { userRepository.findByUserId(any()) } returns user
                 it("정상 종료한다") {
                     shouldNotThrowAny {
-                        userService.addUserMoney(TEST_USER_ID, TEST_MONEY_10)
+                        userService.addUserMoney(request)
                     }
                 }
             }
 
             context("돈이 0 이하로 주어진 경우") {
+                val request = createUserMoneyPatchRequest(money = TEST_INVALID_MONEY)
                 every { userRepository.findByUserId(any()) } returns user
                 it("[IllegalArgumentException] 예외 발생한다") {
                     shouldThrowExactly<IllegalArgumentException> {
-                        userService.addUserMoney(TEST_USER_ID, TEST_INVALID_MONEY)
+                        userService.addUserMoney(request)
                     }
                 }
             }
@@ -66,28 +69,31 @@ class UserServiceTest : DescribeSpec(
         describe("withdrawUserMoney") {
             val user = createUser()
             context("유효한 데이터가 주어진 경우") {
+                val request = createUserMoneyPatchRequest()
                 every { userRepository.findByUserId(any()) } returns user
                 it("정상 종료한다") {
                     shouldNotThrowAny {
-                        userService.withdrawUserMoney(TEST_USER_ID, TEST_MONEY_10)
+                        userService.withdrawUserMoney(request)
                     }
                 }
             }
 
             context("돈이 0 이하로 주어진 경우") {
+                val request = createUserMoneyPatchRequest(money = TEST_INVALID_MONEY)
                 every { userRepository.findByUserId(any()) } returns user
                 it("[IllegalArgumentException] 예외 발생한다") {
                     shouldThrowExactly<IllegalArgumentException> {
-                        userService.withdrawUserMoney(TEST_USER_ID, TEST_INVALID_MONEY)
+                        userService.withdrawUserMoney(request)
                     }
                 }
             }
 
             context("소지한 금액 이상으로 주어진 경우") {
+                val request = createUserMoneyPatchRequest(money = TEST_MONEY_10 + 1)
                 every { userRepository.findByUserId(any()) } returns user
                 it("[IllegalArgumentException] 예외 발생한다") {
                     shouldThrowExactly<IllegalArgumentException> {
-                        userService.withdrawUserMoney(TEST_USER_ID, user.money + TEST_MONEY_10)
+                        userService.withdrawUserMoney(request)
                     }
                 }
             }

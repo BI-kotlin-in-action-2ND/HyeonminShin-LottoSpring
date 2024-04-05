@@ -22,14 +22,13 @@ import com.hm.hyeonminshinlottospring.support.createLottoCreateRequest
 import com.hm.hyeonminshinlottospring.support.createLottoCreateResponse
 import com.hm.hyeonminshinlottospring.support.createLottoNumbers
 import com.hm.hyeonminshinlottospring.support.createSliceLottoNumberResponse
-import com.hm.hyeonminshinlottospring.support.createUser
 import com.hm.hyeonminshinlottospring.support.test.BaseTests.UnitControllerTestEnvironment
 import com.hm.hyeonminshinlottospring.support.test.ControllerTestHelper.Companion.jsonContent
-import com.hm.hyeonminshinlottospring.support.test.RestDocsHelpler
-import com.hm.hyeonminshinlottospring.support.test.RestDocsHelpler.Companion.createDocument
-import com.hm.hyeonminshinlottospring.support.test.RestDocsHelpler.Companion.createPathDocument
-import com.hm.hyeonminshinlottospring.support.test.RestDocsHelpler.Companion.requestBody
-import com.hm.hyeonminshinlottospring.support.test.RestDocsHelpler.Companion.responseBody
+import com.hm.hyeonminshinlottospring.support.test.RestDocsHelper
+import com.hm.hyeonminshinlottospring.support.test.RestDocsHelper.Companion.createDocument
+import com.hm.hyeonminshinlottospring.support.test.RestDocsHelper.Companion.createPathDocument
+import com.hm.hyeonminshinlottospring.support.test.RestDocsHelper.Companion.requestBody
+import com.hm.hyeonminshinlottospring.support.test.RestDocsHelper.Companion.responseBody
 import com.hm.hyeonminshinlottospring.support.test.example
 import com.hm.hyeonminshinlottospring.support.test.isOptional
 import com.hm.hyeonminshinlottospring.support.test.parameterDescription
@@ -37,6 +36,7 @@ import com.hm.hyeonminshinlottospring.support.test.pathDescription
 import com.hm.hyeonminshinlottospring.support.test.type
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.DescribeSpec
+import io.mockk.coEvery
 import io.mockk.every
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.restdocs.ManualRestDocumentation
@@ -56,7 +56,7 @@ class LottoControllerTest(
 ) : DescribeSpec(
     {
         val restDocumentation = ManualRestDocumentation()
-        val restDocMockMvc = RestDocsHelpler.generateRestDocMvc(context, restDocumentation)
+        val restDocMockMvc = RestDocsHelper.generateRestDocMockMvc(context, restDocumentation)
 
         beforeEach {
             restDocumentation.beforeTest(javaClass, it.name.testName)
@@ -65,10 +65,9 @@ class LottoControllerTest(
         describe("POST /api/v1/lotto") {
             val targetUri = "/api/v1/lotto"
             context("유효한 요청이면서 랜덤 생성인 경우") {
-                val user = createUser()
                 val request = createLottoCreateRequest(mode = GenerateMode.RANDOM, numbers = null)
                 val response = createLottoCreateResponse()
-                every { lottoService.createLottos(request) } returns response
+                coEvery { lottoService.createLottos(request) } returns response
                 it("201 응답힌다.") {
                     restDocMockMvc.post(targetUri) {
                         jsonContent(request)
@@ -101,7 +100,7 @@ class LottoControllerTest(
                     ),
                 )
                 val response = createLottoCreateResponse()
-                every { lottoService.createLottos(request) } returns response
+                coEvery { lottoService.createLottos(request) } returns response
                 it("201 응답힌다.") {
                     restDocMockMvc.post(targetUri) {
                         jsonContent(request)
@@ -149,7 +148,7 @@ class LottoControllerTest(
 
             context("요청한 유저 ID가 존재하지 않을 경우") {
                 val request = createLottoCreateRequest()
-                every { lottoService.createLottos(request) } throws NoSuchElementException("$TEST_USER_ID: 사용자가 존재하지 않습니다.")
+                coEvery { lottoService.createLottos(request) } throws NoSuchElementException("$TEST_USER_ID: 사용자가 존재하지 않습니다.")
                 it("404 응답힌다.") {
                     restDocMockMvc.post(targetUri) {
                         jsonContent(request)
@@ -192,7 +191,7 @@ class LottoControllerTest(
 
             context("투입한 금액이 유저가 가진 돈보다 많은 경우") {
                 val request = createLottoCreateRequest(insertedMoney = TEST_MONEY_10 * 2)
-                every { lottoService.createLottos(request) } throws IllegalArgumentException("${request.userId}: 현재 소지한 금액($TEST_MONEY_10${LottoPrice.UNIT})보다 적은 금액을 입력해주세요.")
+                coEvery { lottoService.createLottos(request) } throws IllegalStateException("${request.userId}: 현재 소지한 금액($TEST_MONEY_10${LottoPrice.UNIT})보다 적은 금액을 입력해주세요.")
                 it("400 응답힌다.") {
                     restDocMockMvc.post(targetUri) {
                         jsonContent(request)
@@ -225,9 +224,9 @@ class LottoControllerTest(
                             .param(ROUND_PARAM, TEST_ROUND.toString())
                             .param(PAGE_PARAM, TEST_PAGE.toString())
                             .param(SIZE_PARAM, TEST_SIZE.toString()),
-                    ).andExpect {
-                        status().isOk
-                    }.andDo {
+                    ).andExpect(
+                        status().isOk,
+                    ).andDo(
                         createPathDocument(
                             "get-lottos-by-user-round-success",
                             pathParameters(
@@ -243,10 +242,10 @@ class LottoControllerTest(
                                 "round" type JsonFieldType.NUMBER description "조회한 로또 라운드" example response.round isOptional true,
                                 "hasNext" type JsonFieldType.BOOLEAN description "조회 가능한 추가적인 데이터 존재 여부" example response.hasNext,
                                 "numberOfElements" type JsonFieldType.NUMBER description "현재 가져온 데이터 개수" example response.numberOfElements,
-                                "content" type JsonFieldType.ARRAY description "조회한 개수만큼의 로또 번호 리스트" example response.numberList,
+                                "numberList" type JsonFieldType.ARRAY description "조회된 개수만큼의 로또 번호 리스트" example response.numberList,
                             ),
-                        )
-                    }
+                        ),
+                    )
                 }
             }
 
@@ -258,9 +257,9 @@ class LottoControllerTest(
                             .param(ROUND_PARAM, TEST_ROUND.toString())
                             .param(PAGE_PARAM, TEST_PAGE.toString())
                             .param(SIZE_PARAM, TEST_SIZE.toString()),
-                    ).andExpect {
-                        status().isBadRequest
-                    }.andDo {
+                    ).andExpect(
+                        status().isBadRequest,
+                    ).andDo(
                         createPathDocument(
                             "get-lottos-by-user-round-fail-user-id-negative",
                             pathParameters(
@@ -271,8 +270,8 @@ class LottoControllerTest(
                                 PAGE_PARAM parameterDescription "데이터 조회 시작점 (default = 0)" example TEST_PAGE isOptional true,
                                 SIZE_PARAM parameterDescription "데이터 개수 (default = 10)" example TEST_SIZE isOptional true,
                             ),
-                        )
-                    }
+                        ),
+                    )
                 }
             }
 
@@ -284,9 +283,9 @@ class LottoControllerTest(
                             .param(ROUND_PARAM, TEST_INVALID_ROUND.toString())
                             .param(PAGE_PARAM, TEST_PAGE.toString())
                             .param(SIZE_PARAM, TEST_SIZE.toString()),
-                    ).andExpect {
-                        status().isBadRequest
-                    }.andDo {
+                    ).andExpect(
+                        status().isBadRequest,
+                    ).andDo(
                         createPathDocument(
                             "get-lottos-by-user-round-fail-round-negative",
                             pathParameters(
@@ -297,13 +296,19 @@ class LottoControllerTest(
                                 PAGE_PARAM parameterDescription "데이터 조회 시작점 (default = 0)" example TEST_PAGE isOptional true,
                                 SIZE_PARAM parameterDescription "데이터 개수 (default = 10)" example TEST_SIZE isOptional true,
                             ),
-                        )
-                    }
+                        ),
+                    )
                 }
             }
 
             context("Admin 유저 ID가 주어진 경우") {
-                every { lottoService.getLottosByUserAndRound(TEST_ADMIN_USER_ID, TEST_ROUND, TEST_PAGEABLE) } throws IllegalStateException("$TEST_ADMIN_USER_ID: 주어진 유저 ID는 조회할 수 없습니다.")
+                every {
+                    lottoService.getLottosByUserAndRound(
+                        TEST_ADMIN_USER_ID,
+                        TEST_ROUND,
+                        TEST_PAGEABLE,
+                    )
+                } throws IllegalStateException("$TEST_ADMIN_USER_ID: 주어진 유저 ID는 조회할 수 없습니다.")
                 it("400 응답한다.") {
                     restDocMockMvc.perform(
                         RestDocumentationRequestBuilders
@@ -311,9 +316,9 @@ class LottoControllerTest(
                             .param(ROUND_PARAM, TEST_ROUND.toString())
                             .param(PAGE_PARAM, TEST_PAGE.toString())
                             .param(SIZE_PARAM, TEST_SIZE.toString()),
-                    ).andExpect {
-                        status().isBadRequest
-                    }.andDo {
+                    ).andExpect(
+                        status().isBadRequest,
+                    ).andDo(
                         createPathDocument(
                             "get-lottos-by-user-round-fail-user-id-admin",
                             pathParameters(
@@ -324,14 +329,19 @@ class LottoControllerTest(
                                 PAGE_PARAM parameterDescription "데이터 조회 시작점 (default = 0)" example TEST_PAGE isOptional true,
                                 SIZE_PARAM parameterDescription "데이터 개수 (default = 10)" example TEST_SIZE isOptional true,
                             ),
-                        )
-                    }
+                        ),
+                    )
                 }
             }
 
             context("존재하지 않는 유저 ID가 주어진 경우") {
-                val response = createSliceLottoNumberResponse()
-                every { lottoService.getLottosByUserAndRound(TEST_NOT_EXIST_USER_ID, TEST_ROUND, TEST_PAGEABLE) } returns response
+                every {
+                    lottoService.getLottosByUserAndRound(
+                        TEST_NOT_EXIST_USER_ID,
+                        TEST_ROUND,
+                        TEST_PAGEABLE,
+                    )
+                } throws NoSuchElementException("$TEST_NOT_EXIST_USER_ID: 사용자가 존재하지 않습니다.")
                 it("404 응답한다.") {
                     restDocMockMvc.perform(
                         RestDocumentationRequestBuilders
@@ -339,9 +349,9 @@ class LottoControllerTest(
                             .param(ROUND_PARAM, TEST_ROUND.toString())
                             .param(PAGE_PARAM, TEST_PAGE.toString())
                             .param(SIZE_PARAM, TEST_SIZE.toString()),
-                    ).andExpect {
-                        status().isNotFound
-                    }.andDo {
+                    ).andExpect(
+                        status().isNotFound,
+                    ).andDo(
                         createPathDocument(
                             "get-lottos-by-user-round-fail-user-id-not-exist",
                             pathParameters(
@@ -352,8 +362,8 @@ class LottoControllerTest(
                                 PAGE_PARAM parameterDescription "데이터 조회 시작점 (default = 0)" example TEST_PAGE isOptional true,
                                 SIZE_PARAM parameterDescription "데이터 개수 (default = 10)" example TEST_SIZE isOptional true,
                             ),
-                        )
-                    }
+                        ),
+                    )
                 }
             }
         }

@@ -9,7 +9,6 @@ import com.hm.hyeonminshinlottospring.domain.winninglotto.domain.WinningLottoInf
 import com.hm.hyeonminshinlottospring.domain.winninglotto.repository.WinningLottoRepository
 import com.hm.hyeonminshinlottospring.support.TEST_ADMIN_USER_ID
 import com.hm.hyeonminshinlottospring.support.TEST_INVALID_ROUND
-import com.hm.hyeonminshinlottospring.support.TEST_NUMBER
 import com.hm.hyeonminshinlottospring.support.TEST_ROUND
 import com.hm.hyeonminshinlottospring.support.createAdmin
 import com.hm.hyeonminshinlottospring.support.createAllLotto
@@ -18,8 +17,10 @@ import com.hm.hyeonminshinlottospring.support.createUser
 import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.assertions.throwables.shouldThrowExactly
 import io.kotest.core.spec.style.DescribeSpec
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.sync.Mutex
 
 class WinningLottoServiceTest : DescribeSpec(
     {
@@ -31,34 +32,10 @@ class WinningLottoServiceTest : DescribeSpec(
         val winningLottoService =
             WinningLottoService(
                 winningLottoInformation,
-                randomLottoNumbersGenerator,
                 lottoRepository,
                 winningLottoRepository,
                 userRepository,
             )
-
-        describe("createWinningLotto") {
-            context("호출했을 경우") {
-                val admin = createAdmin()
-                val lotto = createLotto(admin)
-                val winLotto =
-                    WinningLotto(
-                        round = TEST_ROUND,
-                        lotto = lotto,
-                    )
-                every { winningLottoInformation.round } returns TEST_ROUND
-                every { userRepository.save(any()) } returns admin
-                every { randomLottoNumbersGenerator.generate() } returns TEST_NUMBER
-                every { lottoRepository.save(any()) } returns lotto
-                every { winningLottoRepository.save(any()) } returns winLotto
-                every { winningLottoInformation.increaseRound() } returns Unit
-                it("정상 종료") {
-                    shouldNotThrowAny {
-                        winningLottoService.createWinningLotto()
-                    }
-                }
-            }
-        }
 
         describe("getWinningLottoByRound") {
             val user = createUser()
@@ -72,6 +49,7 @@ class WinningLottoServiceTest : DescribeSpec(
                     )
                 every { userRepository.findByUserId(any()) } returns admin
                 every { winningLottoInformation.round } returns TEST_ROUND
+                coEvery { winningLottoInformation.roundMutex } returns Mutex()
 
                 it("정상 종료: 존재하는 라운드") {
                     every { winningLottoRepository.findByRound(any()) } returns winLotto
@@ -96,6 +74,7 @@ class WinningLottoServiceTest : DescribeSpec(
                     )
                 every { userRepository.findByUserId(any()) } returns user
                 every { winningLottoInformation.round } returns TEST_ROUND
+                coEvery { winningLottoInformation.roundMutex } returns Mutex()
 
                 it("정상 종료: 현재 라운드 이전 라운드 접근") {
                     every { winningLottoRepository.findByRound(any()) } returns winLotto

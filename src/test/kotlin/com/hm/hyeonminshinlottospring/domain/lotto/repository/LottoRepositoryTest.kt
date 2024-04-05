@@ -1,7 +1,5 @@
 package com.hm.hyeonminshinlottospring.domain.lotto.repository
 
-import com.hm.hyeonminshinlottospring.domain.lotto.domain.Lotto
-import com.hm.hyeonminshinlottospring.domain.user.domain.User
 import com.hm.hyeonminshinlottospring.domain.user.repository.UserRepository
 import com.hm.hyeonminshinlottospring.support.TEST_DEFAULT_PAGEABLE
 import com.hm.hyeonminshinlottospring.support.TEST_INVALID_LOTTO_ID
@@ -11,42 +9,35 @@ import com.hm.hyeonminshinlottospring.support.createLotto
 import com.hm.hyeonminshinlottospring.support.createOtherLotto
 import com.hm.hyeonminshinlottospring.support.createOtherUser
 import com.hm.hyeonminshinlottospring.support.createUser
-import com.hm.hyeonminshinlottospring.support.test.BaseTests.IntegrationTest
+import com.hm.hyeonminshinlottospring.support.test.BaseTests.RepositoryTest
 import io.kotest.assertions.throwables.shouldThrowExactly
 import io.kotest.core.spec.style.ExpectSpec
 import io.kotest.matchers.ints.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
-import org.springframework.data.domain.Pageable
-import org.springframework.transaction.annotation.Transactional
 
-// @RepositoryTest
-@IntegrationTest
-@Transactional
+@RepositoryTest
 class LottoRepositoryTest(
     private val lottoRepository: LottoRepository,
     private val userRepository: UserRepository,
 ) : ExpectSpec(
     {
-        lateinit var user1: User
-        lateinit var user2: User
-        lateinit var lotto1: Lotto
-        lateinit var sameLotto1: Lotto
-        lateinit var lotto2: Lotto
-        lateinit var pageable: Pageable
+        val user1 = userRepository.save(createUser())
+        val user2 = userRepository.save(createOtherUser())
+        val lotto1 = lottoRepository.save(createLotto(user1))
+        val sameLotto1 = lottoRepository.save(createLotto(user1))
+        val lotto2 = lottoRepository.save(createOtherLotto(user2))
+        val pageable = TEST_DEFAULT_PAGEABLE
 
-        beforeEach {
-            user1 = userRepository.save(createUser())
-            user2 = userRepository.save(createOtherUser())
-            lotto1 = lottoRepository.save(createLotto(user1))
-            sameLotto1 = lottoRepository.save(createLotto(user1))
-            lotto2 = lottoRepository.save(createOtherLotto(user2))
-            pageable = TEST_DEFAULT_PAGEABLE
+        // 순서 주의!
+        afterSpec {
+            lottoRepository.deleteAll()
+            userRepository.deleteAll()
         }
 
         context("단순 로또 조회") {
             expect("로또 ID와 일치하는 로또 조회") {
                 val result = lottoRepository.findByLottoId(lotto1.id)
-                result.user shouldBe user1
+                result.user.userName shouldBe user1.userName
             }
 
             expect("존재하지 않는 로또 ID로 조회") {
