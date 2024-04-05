@@ -13,7 +13,6 @@ import jakarta.persistence.Id
 import jakarta.persistence.Index
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
-import jakarta.persistence.SequenceGenerator
 import jakarta.persistence.Table
 
 // TODO: 최적화 솔루션) numbers를 bitset으로 다루기!!
@@ -23,24 +22,17 @@ import jakarta.persistence.Table
         Index(name = "user_id_index", columnList = "user_id"),
     ],
 )
-@SequenceGenerator(
-    name = "LOTTO_SEQ_GENERATOR",
-    sequenceName = "LOTTO_SEQ",
-    initialValue = 1,
-    allocationSize = 1,
-)
 @Entity
 class Lotto(
     @Column(nullable = false, updatable = false)
     val round: Int,
     @Convert(converter = LottoNumberAttributeConverter::class)
-    val numbers: LottoNumber,
+    val numbers: LottoNumbers,
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", updatable = false)
     val user: User,
     @Id
-    @Column(columnDefinition = "NUMERIC(19, 0)")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "LOTTO_SEQ_GENERATOR")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0L,
 ) : BaseTimeEntity() {
     // TODO: bonus 번호 프로퍼티를 추가하기
@@ -52,7 +44,7 @@ class Lotto(
     ) : this(
         round = round,
         user = user,
-        numbers = LottoNumber(numbers),
+        numbers = LottoNumbers(numbers),
         id = id,
     )
 
