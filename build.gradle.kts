@@ -33,20 +33,27 @@ val asciidoctorExt: Configuration by configurations.creating
 val snippetsDir by extra { file("build/generated-snippets") }
 
 dependencies {
+    // Common
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-hibernate6")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    // Coroutine
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1-Beta")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.8.0")
     // Database
+    implementation("org.flywaydb:flyway-core")
     implementation("org.hibernate.orm:hibernate-core:6.4.4.Final")
     implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0") // hibernate 6 - for logging SQL
     runtimeOnly("com.h2database:h2:2.2.222")
+    runtimeOnly("org.postgresql:postgresql")
     // Test
+    testImplementation("io.projectreactor:reactor-test")
     testImplementation("io.mockk:mockk:1.13.5")
     testImplementation("com.ninja-squad:springmockk:4.0.2")
     testImplementation("io.kotest:kotest-runner-junit5:5.6.2")
@@ -65,8 +72,8 @@ tasks {
 
     withType<KotlinCompile> {
         kotlinOptions {
-            freeCompilerArgs += "-Xjsr305=strict"
-            jvmTarget = "21" // TODO: 스레드 사용 때 가능하면 virtual thread 써보자.
+            freeCompilerArgs += "-Xjsr305=strict --release 21"
+            jvmTarget = "21"
         }
     }
 
@@ -80,6 +87,9 @@ tasks {
     }
 
     asciidoctor {
+        doFirst {
+            project.delete(files("src/main/resources/static/docs"))
+        }
         inputs.dir(snippetsDir)
         configurations("asciidoctorExt")
         sources {
@@ -90,6 +100,7 @@ tasks {
     }
 
     register<Copy>("copyDocs") {
+        mustRunAfter("processResources")
         dependsOn(asciidoctor)
         from("${asciidoctor.get().outputDir}/index.html")
         into("src/main/resources/static/docs")
@@ -100,5 +111,13 @@ tasks {
         from("${asciidoctor.get().outputDir}/index.html") {
             into("static/docs")
         }
+    }
+
+    build {
+        dependsOn("copyDocs")
+    }
+
+    named<Jar>("jar") {
+        enabled = false
     }
 }
