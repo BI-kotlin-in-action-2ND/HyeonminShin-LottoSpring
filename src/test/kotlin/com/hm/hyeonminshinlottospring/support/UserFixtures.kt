@@ -3,6 +3,7 @@ package com.hm.hyeonminshinlottospring.support
 import com.hm.hyeonminshinlottospring.domain.user.domain.User
 import com.hm.hyeonminshinlottospring.domain.user.domain.UserRole
 import com.hm.hyeonminshinlottospring.domain.user.dto.UserCreateRequest
+import com.hm.hyeonminshinlottospring.domain.user.dto.UserMoneyPatchRequest
 import com.hm.hyeonminshinlottospring.domain.user.dto.UserResponse
 
 const val TEST_USER_ID = 1001L
@@ -57,5 +58,13 @@ fun createUserCreateRequest(user: User) =
         money = user.money,
         userRole = user.userRole,
     )
+
+fun createUserMoneyPatchRequest(
+    userId: Long = TEST_USER_ID,
+    money: Int = TEST_MONEY_10,
+) = UserMoneyPatchRequest(
+    userId = userId,
+    money = money,
+)
 
 fun createUserResponse(user: User) = UserResponse.from(user)
