@@ -32,12 +32,12 @@ fun createWinningLottoMatchResponse(
 fun createListWinningLottoMatchResponse() =
     listOf(
         createWinningLottoMatchResponse(
-            lotto = createLotto(createUser(), listOf(1, 2, 3, 4, 5, 6)),
+            lotto = createLotto(createUser(), numbers = listOf(1, 2, 3, 4, 5, 6)),
             matched = listOf(1, 2, 3),
             rank = LottoRank.getRank(3),
         ),
         createWinningLottoMatchResponse(
-            lotto = createOtherLotto(createUser(), listOf(10, 11, 12, 13, 14, 15)),
+            lotto = createOtherLotto(createUser(), numbers = listOf(10, 11, 12, 13, 14, 15)),
             matched = listOf(11, 12, 13, 14),
             rank = LottoRank.getRank(4),
         ),
