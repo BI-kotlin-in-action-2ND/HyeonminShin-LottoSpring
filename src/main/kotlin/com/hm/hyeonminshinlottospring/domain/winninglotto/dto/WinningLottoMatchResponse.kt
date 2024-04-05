@@ -1,11 +1,11 @@
 package com.hm.hyeonminshinlottospring.domain.winninglotto.dto
 
 import com.hm.hyeonminshinlottospring.domain.lotto.domain.Lotto
-import com.hm.hyeonminshinlottospring.domain.lotto.domain.LottoNumber
+import com.hm.hyeonminshinlottospring.domain.lotto.domain.LottoNumbers
 import com.hm.hyeonminshinlottospring.domain.lotto.domain.info.LottoRank
 
 class WinningLottoMatchResponse(
-    val numbers: LottoNumber,
+    val numbers: LottoNumbers,
     val matched: List<Int>,
     val rankString: String,
     val prize: Int,
