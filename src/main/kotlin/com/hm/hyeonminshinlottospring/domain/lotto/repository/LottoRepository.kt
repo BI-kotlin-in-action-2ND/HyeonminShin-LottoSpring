@@ -32,4 +32,6 @@ interface LottoRepository : JpaRepository<Lotto, Long> {
         userId: Long,
         round: Int,
     ): List<Lotto>
+
+    fun findFirstByOrderByRoundDesc(): Lotto?
 }
