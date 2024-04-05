@@ -3,18 +3,18 @@ package com.hm.hyeonminshinlottospring.domain.lotto.domain
 import java.util.SortedSet
 
 @JvmInline
-value class LottoNumber private constructor(private val number: SortedSet<Int>) {
+value class LottoNumbers private constructor(private val numbers: SortedSet<Int>) {
     init {
-        require(number.size == NUM_OF_LOTTO_NUMBERS) { "중복을 제외한 ${NUM_OF_LOTTO_NUMBERS}개의 번호가 필요합니다." }
-        require(number.all { it in VALID_RANGE }) { NUMBER_RANGE_ERROR_MESSAGE }
+        require(numbers.size == NUM_OF_LOTTO_NUMBERS) { "중복을 제외한 ${NUM_OF_LOTTO_NUMBERS}개의 번호가 필요합니다." }
+        require(numbers.all { it in VALID_RANGE }) { NUMBER_RANGE_ERROR_MESSAGE }
     }
 
     constructor(number: Collection<Int>) : this(number.toSortedSet())
 
-    fun joinToString() = this.number.joinToString(DELIMITER)
-    fun intersect(other: LottoNumber) = this.number.intersect(other.number)
+    fun joinToString() = this.numbers.joinToString(DELIMITER)
+    fun intersect(other: LottoNumbers) = this.numbers.intersect(other.numbers)
 
-    fun count(other: LottoNumber) = this.number.count { it in other.number }
+    fun count(other: LottoNumbers) = this.numbers.count { it in other.numbers }
 
     companion object {
         const val LOTTO_MIN_NUMBER = 1
@@ -30,6 +30,6 @@ value class LottoNumber private constructor(private val number: SortedSet<Int>) 
             "로또 번호는 [$LOTTO_MIN_NUMBER ~ $LOTTO_MAX_NUMBER] 범위여야 합니다."
 
         @JvmStatic
-        fun from(number: Collection<Int>) = LottoNumber(number.toSortedSet())
+        fun from(number: Collection<Int>) = LottoNumbers(number.toSortedSet())
     }
 }
