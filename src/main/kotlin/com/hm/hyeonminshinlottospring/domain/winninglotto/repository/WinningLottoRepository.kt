@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface WinningLottoRepository : JpaRepository<WinningLotto, Long> {
-    fun findByRound(round: Int): WinningLotto? // ?: throw NoSuchElementException("$round 라운드에 해당하는 당첨 번호가 존재하지 않습니다.")
+    fun findByRound(round: Int): WinningLotto?
 }
