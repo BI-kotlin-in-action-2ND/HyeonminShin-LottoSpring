@@ -2,7 +2,7 @@ package com.hm.hyeonminshinlottospring.support
 
 import com.hm.hyeonminshinlottospring.domain.lotto.domain.GenerateMode
 import com.hm.hyeonminshinlottospring.domain.lotto.domain.Lotto
-import com.hm.hyeonminshinlottospring.domain.lotto.domain.LottoNumber
+import com.hm.hyeonminshinlottospring.domain.lotto.domain.LottoNumbers
 import com.hm.hyeonminshinlottospring.domain.lotto.dto.LottoCreateRequest
 import com.hm.hyeonminshinlottospring.domain.lotto.dto.LottoCreateResponse
 import com.hm.hyeonminshinlottospring.domain.lotto.dto.SliceLottoNumberResponse
@@ -21,43 +21,45 @@ const val TEST_INVALID_ROUND = -1
 const val TEST_GENERATE_COUNT_2 = 2
 const val TEST_GENERATE_COUNT_10 = 10
 val TEST_NUMBER =
-    (LottoNumber.LOTTO_MIN_NUMBER..LottoNumber.LOTTO_MAX_NUMBER)
+    (LottoNumbers.LOTTO_MIN_NUMBER..LottoNumbers.LOTTO_MAX_NUMBER)
         .shuffled()
-        .take(LottoNumber.NUM_OF_LOTTO_NUMBERS)
+        .take(LottoNumbers.NUM_OF_LOTTO_NUMBERS)
 val TEST_NUMBER_2 =
-    (LottoNumber.LOTTO_MIN_NUMBER..LottoNumber.LOTTO_MAX_NUMBER)
+    (LottoNumbers.LOTTO_MIN_NUMBER..LottoNumbers.LOTTO_MAX_NUMBER)
         .shuffled()
-        .take(LottoNumber.NUM_OF_LOTTO_NUMBERS)
+        .take(LottoNumbers.NUM_OF_LOTTO_NUMBERS)
 val TEST_OTHER_NUMBER =
-    (LottoNumber.LOTTO_MIN_NUMBER..LottoNumber.LOTTO_MAX_NUMBER)
+    (LottoNumbers.LOTTO_MIN_NUMBER..LottoNumbers.LOTTO_MAX_NUMBER)
         .shuffled()
-        .take(LottoNumber.NUM_OF_LOTTO_NUMBERS)
+        .take(LottoNumbers.NUM_OF_LOTTO_NUMBERS)
 val TEST_NUMBER_NODUP_BUT_OVERSIZE =
-    (LottoNumber.LOTTO_MIN_NUMBER..LottoNumber.LOTTO_MAX_NUMBER)
+    (LottoNumbers.LOTTO_MIN_NUMBER..LottoNumbers.LOTTO_MAX_NUMBER)
         .shuffled()
-        .take(LottoNumber.NUM_OF_LOTTO_NUMBERS + 1)
+        .take(LottoNumbers.NUM_OF_LOTTO_NUMBERS + 1)
 val TEST_NUMBER_NODUP_BUT_UNDERSIZE =
-    (LottoNumber.LOTTO_MIN_NUMBER..LottoNumber.LOTTO_MAX_NUMBER)
+    (LottoNumbers.LOTTO_MIN_NUMBER..LottoNumbers.LOTTO_MAX_NUMBER)
         .shuffled()
-        .take(LottoNumber.NUM_OF_LOTTO_NUMBERS - 1)
+        .take(LottoNumbers.NUM_OF_LOTTO_NUMBERS - 1)
 val TEST_NUMBER_NORMALSIZE_BUT_DUP =
-    (LottoNumber.LOTTO_MIN_NUMBER..<LottoNumber.LOTTO_MAX_NUMBER)
-        .take(LottoNumber.NUM_OF_LOTTO_NUMBERS - 2) + LottoNumber.LOTTO_MAX_NUMBER + LottoNumber.LOTTO_MAX_NUMBER
+    (LottoNumbers.LOTTO_MIN_NUMBER..<LottoNumbers.LOTTO_MAX_NUMBER)
+        .take(LottoNumbers.NUM_OF_LOTTO_NUMBERS - 2) + LottoNumbers.LOTTO_MAX_NUMBER + LottoNumbers.LOTTO_MAX_NUMBER
 
 fun createLotto(
     user: User,
+    round: Int = TEST_ROUND,
     numbers: Collection<Int> = TEST_NUMBER,
 ) = Lotto(
-    round = TEST_ROUND,
+    round = round,
     numbers = numbers,
     user = user,
 )
 
 fun createOtherLotto(
     user: User,
+    round: Int = TEST_ROUND,
     numbers: Collection<Int> = TEST_OTHER_NUMBER,
 ) = Lotto(
-    round = TEST_ROUND,
+    round = round,
     numbers = numbers,
     user = user,
 )
@@ -72,21 +74,21 @@ fun createCustomLotto(
     user = user,
 )
 
-fun createLottoNumber(list: Collection<Int> = TEST_NUMBER) = LottoNumber(list)
+fun createLottoNumber(list: Collection<Int> = TEST_NUMBER) = LottoNumbers(list)
 
 fun createLottoNumbers(count: Int = 1): List<List<Int>> {
     val mutableList = mutableListOf<List<Int>>()
     repeat(count) {
         mutableList.add(
-            (LottoNumber.LOTTO_MIN_NUMBER..LottoNumber.LOTTO_MAX_NUMBER)
+            (LottoNumbers.LOTTO_MIN_NUMBER..LottoNumbers.LOTTO_MAX_NUMBER)
                 .shuffled()
-                .take(LottoNumber.NUM_OF_LOTTO_NUMBERS),
+                .take(LottoNumbers.NUM_OF_LOTTO_NUMBERS),
         )
     }
     return mutableList.toList()
 }
 
-fun createAllLotto(user: User) = listOf(createLotto(user), createLotto(user, TEST_NUMBER_2))
+fun createAllLotto(user: User) = listOf(createLotto(user), createLotto(user, numbers = TEST_NUMBER_2))
 fun createLottoCreateRequest(
     userId: Long = TEST_USER_ID,
     insertedMoney: Int = TEST_MONEY_10,
@@ -120,5 +122,5 @@ fun createSliceLottoNumberResponse(
     round = round,
     hasNext = hasNext,
     numberOfElements = numberOfElements,
-    numberList = createLottoNumbers(numberOfElements).map { it.joinToString() },
+    numberList = numberList ?: createLottoNumbers(numberOfElements).map { it.joinToString() },
 )
