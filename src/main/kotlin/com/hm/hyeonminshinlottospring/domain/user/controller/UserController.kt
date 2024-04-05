@@ -1,6 +1,7 @@
 package com.hm.hyeonminshinlottospring.domain.user.controller
 
 import com.hm.hyeonminshinlottospring.domain.user.dto.UserCreateRequest
+import com.hm.hyeonminshinlottospring.domain.user.dto.UserMoneyPatchRequest
 import com.hm.hyeonminshinlottospring.domain.user.dto.UserResponse
 import com.hm.hyeonminshinlottospring.domain.user.service.UserService
 import jakarta.validation.Valid
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.net.URI
 
@@ -28,7 +28,7 @@ class UserController(
         @Valid
         @RequestBody
         userCreateRequest: UserCreateRequest,
-    ): ResponseEntity<UserResponse> {
+    ): ResponseEntity<Void> {
         val userId = userService.createUser(userCreateRequest)
         return ResponseEntity.created(URI.create("/api/v1/user/$userId")).build()
     }
@@ -43,29 +43,23 @@ class UserController(
         return ResponseEntity.ok(response)
     }
 
-    @PatchMapping("/{userId}/addMoney")
+    @PatchMapping("/addMoney")
     fun addUserMoney(
-        @Positive(message = "유저 ID는 0보다 커야 합니다.")
-        @PathVariable("userId")
-        userId: Long,
-        @Positive(message = "더할 돈의 값은 양수여야 합니다.")
-        @RequestParam("charge")
-        charge: Int,
+        @Valid
+        @RequestBody
+        userMoneyPatchRequest: UserMoneyPatchRequest,
     ): ResponseEntity<Void> {
-        userService.addUserMoney(userId, charge)
+        userService.addUserMoney(userMoneyPatchRequest)
         return ResponseEntity.noContent().build()
     }
 
-    @PatchMapping("/{userId}/withdrawMoney")
+    @PatchMapping("/withdrawMoney")
     fun withdrawUserMoney(
-        @Positive(message = "유저 ID는 0보다 커야 합니다.")
-        @PathVariable("userId")
-        userId: Long,
-        @Positive(message = "출금할 돈의 값은 양수여야 합니다.")
-        @RequestParam("charge")
-        charge: Int,
+        @Valid
+        @RequestBody
+        userMoneyPatchRequest: UserMoneyPatchRequest,
     ): ResponseEntity<Void> {
-        userService.withdrawUserMoney(userId, charge)
+        userService.withdrawUserMoney(userMoneyPatchRequest)
         return ResponseEntity.noContent().build()
     }
 }

@@ -1,6 +1,7 @@
 package com.hm.hyeonminshinlottospring.domain.user.service
 
 import com.hm.hyeonminshinlottospring.domain.user.dto.UserCreateRequest
+import com.hm.hyeonminshinlottospring.domain.user.dto.UserMoneyPatchRequest
 import com.hm.hyeonminshinlottospring.domain.user.dto.UserResponse
 import com.hm.hyeonminshinlottospring.domain.user.repository.UserRepository
 import com.hm.hyeonminshinlottospring.domain.user.repository.findByUserId
@@ -25,21 +26,15 @@ class UserService(
     }
 
     @Transactional
-    fun addUserMoney(
-        userId: Long,
-        addMoney: Int,
-    ): Int {
-        val user = userRepository.findByUserId(userId)
-        return user.addMoney(addMoney)
+    fun addUserMoney(request: UserMoneyPatchRequest): Int {
+        val user = userRepository.findByUserId(request.userId)
+        return user.addMoney(request.money)
     }
 
     @Transactional
-    fun withdrawUserMoney(
-        userId: Long,
-        withdrawMoney: Int,
-    ): Int {
-        val user = userRepository.findByUserId(userId)
-        return user.withdrawMoney(withdrawMoney)
+    fun withdrawUserMoney(request: UserMoneyPatchRequest): Int {
+        val user = userRepository.findByUserId(request.userId)
+        return user.withdrawMoney(request.money)
     }
 
     // TODO: User 삭제 추가
