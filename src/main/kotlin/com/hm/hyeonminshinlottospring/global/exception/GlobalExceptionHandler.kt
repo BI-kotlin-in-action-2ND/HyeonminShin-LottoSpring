@@ -30,13 +30,13 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
     ): ResponseEntity<Any>? {
         logger.error("[MethodArgumentNotValidException], ex")
         val bindingResult = ex.bindingResult
-        val stringBuilder = StringBuilder()
+        var errorMessage = ""
         for (fieldError in bindingResult.fieldErrors) {
-            stringBuilder.append(fieldError.field).append(":")
-            stringBuilder.append(fieldError.defaultMessage)
-            stringBuilder.append(", ")
+            errorMessage += (fieldError.field + ":")
+            errorMessage += fieldError.defaultMessage
+            errorMessage += ", "
         }
-        return getInvalidRequestResponse(stringBuilder.toString())
+        return getInvalidRequestResponse(errorMessage)
     }
 
     override fun handleHttpMessageNotReadable(
