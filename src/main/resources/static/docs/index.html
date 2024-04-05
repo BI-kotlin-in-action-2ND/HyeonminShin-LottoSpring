@@ -633,7 +633,7 @@ Host: localhost:8080
   "userId" : 1001,
   "mode" : "MANUAL",
   "insertedMoney" : 10,
-  "numbers" : [ [ 38, 41, 16, 35, 34, 6 ], [ 7, 17, 12, 44, 24, 38 ], [ 31, 19, 26, 2, 15, 6 ], [ 9, 17, 22, 14, 18, 13 ], [ 21, 2, 33, 27, 19, 34 ], [ 38, 17, 40, 43, 4, 36 ], [ 2, 16, 22, 31, 20, 3 ], [ 41, 14, 21, 38, 4, 44 ], [ 2, 44, 5, 1, 32, 11 ], [ 7, 41, 15, 32, 35, 44 ] ]
+  "numbers" : [ [ 12, 26, 1, 25, 14, 29 ], [ 45, 5, 40, 2, 17, 26 ], [ 14, 15, 39, 9, 36, 37 ], [ 2, 31, 25, 41, 1, 28 ], [ 22, 19, 16, 44, 14, 7 ], [ 15, 22, 36, 20, 21, 45 ], [ 20, 17, 44, 1, 30, 2 ], [ 26, 25, 4, 23, 32, 19 ], [ 8, 6, 2, 31, 45, 22 ], [ 25, 8, 29, 32, 15, 24 ] ]
 }</code></pre>
 </div>
 </div>
@@ -884,14 +884,14 @@ Host: localhost:8080</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 154
+Content-Length: 157
 
 {
   "userId" : 1001,
   "round" : 1001,
   "hasNext" : true,
   "numberOfElements" : 2,
-  "numberList" : [ "20, 5, 22, 44, 45, 6", "8, 12, 42, 41, 36, 9" ]
+  "numberList" : [ "37, 20, 40, 15, 24, 6", "43, 21, 18, 15, 27, 14" ]
 }</code></pre>
 </div>
 </div>
@@ -947,7 +947,7 @@ Content-Length: 154
 <td class="tableblock halign-left valign-top"><p class="tableblock">조회된 개수만큼의 로또 번호 리스트</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">[20, 5, 22, 44, 45, 6, 8, 12, 42, 41, 36, 9]</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">[37, 20, 40, 15, 24, 6, 43, 21, 18, 15, 27, 14]</p></td>
 </tr>
 </tbody>
 </table>
@@ -2140,11 +2140,11 @@ Host: localhost:8080</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 58
+Content-Length: 61
 
 {
   "round" : 1001,
-  "numbers" : [ 1, 6, 7, 9, 25, 36 ]
+  "numbers" : [ 4, 10, 14, 29, 35, 36 ]
 }</code></pre>
 </div>
 </div>
@@ -2179,7 +2179,7 @@ Content-Length: 58
 <td class="tableblock halign-left valign-top"><p class="tableblock">해당 라운드의 당첨 번호 리스트</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">LottoNumbers(numbers=[1, 6, 7, 9, 25, 36])</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LottoNumbers(numbers=[4, 10, 14, 29, 35, 36])</p></td>
 </tr>
 </tbody>
 </table>
@@ -2252,11 +2252,11 @@ Host: localhost:8080</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 58
+Content-Length: 61
 
 {
   "round" : 1001,
-  "numbers" : [ 1, 6, 7, 9, 25, 36 ]
+  "numbers" : [ 4, 10, 14, 29, 35, 36 ]
 }</code></pre>
 </div>
 </div>
@@ -2291,7 +2291,7 @@ Content-Length: 58
 <td class="tableblock halign-left valign-top"><p class="tableblock">해당 라운드의 당첨 번호 리스트</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">LottoNumbers(numbers=[1, 6, 7, 9, 25, 36])</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LottoNumbers(numbers=[4, 10, 14, 29, 35, 36])</p></td>
 </tr>
 </tbody>
 </table>
