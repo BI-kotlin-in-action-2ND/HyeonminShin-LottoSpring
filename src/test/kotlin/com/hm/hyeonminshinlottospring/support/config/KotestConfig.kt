@@ -26,5 +26,10 @@ import io.kotest.extensions.spring.SpringTestLifecycleMode
  */
 
 class KotestConfig : AbstractProjectConfig() {
-    override fun extensions(): List<Extension> = listOf(SpringTestExtension(SpringTestLifecycleMode.Test))
+    // 트랜잭션 롤백 단위 설정
+    override fun extensions(): List<Extension> = listOf(SpringTestExtension(SpringTestLifecycleMode.Root))
+
+    // coroutine 테스트 환경 및 디버그 설정
+    override val coroutineTestScope = true
+    override val coroutineDebugProbes = true
 }
