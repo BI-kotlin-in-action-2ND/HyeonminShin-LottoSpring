@@ -13,13 +13,11 @@ class UserService(
     private val userRepository: UserRepository,
 ) {
     // TODO: 나중엔 밖에서 Admin "만들지도, 접근하지도 못하도록" 인증 시스템 도입하기
-    @Transactional
     fun createUser(request: UserCreateRequest): Long {
         val savedUser = userRepository.save(request.toEntity())
         return savedUser.id
     }
 
-    @Transactional(readOnly = true)
     fun getUserInformation(userId: Long): UserResponse {
         val user = userRepository.findByUserId(userId)
         return UserResponse.from(user)
