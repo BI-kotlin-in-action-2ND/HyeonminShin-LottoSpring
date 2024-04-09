@@ -1,0 +1,14 @@
+---
+spring.config.activate.on-profile: prod
+
+spring:
+  flyway:
+    enabled: true
+    baseline-on-migrate: true   # flyway_schema_history 테이블이 없는 경우 생성
+
+---
+spring.config.activate.on-profile: test
+
+spring:
+  flyway:
+    enabled: false

@@ -1,0 +1,56 @@
+[[Winning-Lotto-API]]
+= *Winning Lotto API*
+
+[[당첨-번호-생성-API]]
+== *1. 당첨 번호 생성 API*
+
+=== *1-1 성공 - 현재 라운드를 조회하는 Admin*
+
+operation::winning-lotto-controller-test/get-winning-lotto-round-success-admin-current-round[snippets='http-request,path-parameters,query-parameters,http-response,response-fields']
+
+=== *1-2 성공 - 현재 라운드가 아닌 라운드를 조회하는 일반 유저*
+
+operation::winning-lotto-controller-test/get-winning-lotto-round-success-user-not-current-round[snippets='http-request,path-parameters,query-parameters,http-response,response-fields']
+
+=== *1-3 실패 - 현재 라운드를 조회하는 일반 유저*
+
+operation::winning-lotto-controller-test/get-winning-lotto-round-fail-user-current-round[snippets='http-request,path-parameters,query-parameters,http-response']
+
+=== *1-4 실패 - 음수 유저 id*
+
+operation::winning-lotto-controller-test/get-winning-lotto-round-fail-user-id-negative[snippets='http-request,path-parameters,query-parameters,http-response']
+
+=== *1-5 실패 - 음수의 라운드*
+
+operation::winning-lotto-controller-test/get-winning-lotto-round-fail-round-negative[snippets='http-request,path-parameters,query-parameters,http-response']
+
+=== *1-5 실패 - 존재하지 않는 라운드*
+
+operation::winning-lotto-controller-test/get-winning-lotto-round-fail-round-not-exist[snippets='http-request,path-parameters,query-parameters,http-response']
+
+[[당첨-번호-매칭-API]]
+== *2. 당첨 번호 매칭 API*
+
+=== *2-1 성공*
+
+operation::winning-lotto-controller-test/match-user-lotto-success[snippets='http-request,path-parameters,query-parameters,http-response,response-fields']
+
+=== *2-2 실패 - 음수 유저 id*
+
+operation::winning-lotto-controller-test/match-user-lotto-fail-user-id-negative[snippets='http-request,path-parameters,query-parameters,http-response']
+
+=== *2-3 실패 - 음수의 라운드*
+
+operation::winning-lotto-controller-test/match-user-lotto-fail-round-negative[snippets='http-request,path-parameters,query-parameters,http-response']
+
+=== *2-4 실패 - 존재하지 않는 라운드*
+
+operation::winning-lotto-controller-test/match-user-lotto-fail-round-not-exist[snippets='http-request,path-parameters,query-parameters,http-response']
+
+=== *2-5 실패 - 유효한 라운드지만, Admin id로 매칭 시도*
+
+operation::winning-lotto-controller-test/match-user-lotto-fail-user-id-admin[snippets='http-request,path-parameters,query-parameters,http-response']
+
+=== *2-6 실패 - 일반 유저가 현재 진행 중인 라운드 매칭 시도*
+
+operation::winning-lotto-controller-test/match-user-lotto-fail-user-access-current-round[snippets='http-request,path-parameters,query-parameters,http-response']

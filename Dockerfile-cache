@@ -1,0 +1,7 @@
+FROM amazoncorretto:21-alpine-jdk AS cache
+
+COPY . /app
+WORKDIR /app
+
+RUN ./gradlew assemble -x test -x asciidoctor && \
+    rm -rf /app
