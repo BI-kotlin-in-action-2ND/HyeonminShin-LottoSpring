@@ -55,7 +55,7 @@ class LottoService(
     ): LottoCreateResponse = runBlocking {
         val userId = request.userId
         val user = userRepository.findByUserId(userId)
-        check(request.insertedMoney in 0..user.money) { "${request.userId}: 현재 소지한 금액(${user.money}${LottoPrice.UNIT})보다 적은 금액을 입력해주세요." }
+        check(request.insertedMoney <= user.money) { "${request.userId}: 현재 소지한 금액(${user.money}${LottoPrice.UNIT})보다 적은 금액을 입력해주세요." }
         val generateCount = request.insertedMoney / LottoPrice.PER_PRICE
 
         val round = winningLottoInformation.roundMutex.withLock {
