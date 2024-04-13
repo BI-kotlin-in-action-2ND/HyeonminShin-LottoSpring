@@ -2,6 +2,15 @@
 
 이전에 구현했던 프로젝트의 웹 어플리케이션 포팅 버전
 
+## Rest API Documentation
+
+- [v0.0.1-SNAPSHOT](http://www.lotto-spring.kro.kr:8080/docs/index.html)
+  - URL 접속 안되면 [파일로 보기](https://github.com/BI-kotlin-in-action-2ND/HyeonminShin-LottoSpring/tree/main/src/main/resources/static/docs/index.html)
+
+## Wiki
+
+- [Lotto Spring Wiki](https://github.com/BI-kotlin-in-action-2ND/HyeonminShin-LottoSpring/wiki)
+
 ## 기능 명세
 
 ### 필수 요구사항
@@ -35,18 +44,8 @@
 5. ✅ 당첨 시스템을 현실 세계와 똑같이 로또를 모았다가 한번에 맞춰보는 시스템으로 구현해보세요
    - WinningLottoController의 matchUserLottoByRound()로 한번에 조회 가능
 6. 간단한 화면을 만들어 보세요
-7. aws나 oracle cloud, azure등에 서버를 올려보세요
-8. 관리자를 정의해보고 관리자는 현재의 로또 번호를 확인할수 있도록 해보세요
+7. ✅ aws나 oracle cloud, azure등에 서버를 올려보세요
+8. ✅ 관리자를 정의해보고 관리자는 현재의 로또 번호를 확인할수 있도록 해보세요
 9. 관리자를 정의해보고 관리자가 유저를 탈퇴/ 잔고 회수 / 잔고 추가 등의 동작을 할 수 있도록 해보세요
    - (8,9번) Spring Security로 임시 관리자 프로세스 적용해보기
 10. `(WIP)` MSA환경을 고려해서 개발해보세요
-
-## Rest API Documentation
-
-- [v0.0.1-SNAPSHOT API Docs](http://www.lotto-spring.kro.kr:8080/docs/index.html)
-  - URL 접속 안되면 [파일로 보기](https://github.com/BI-kotlin-in-action-2ND/HyeonminShin-LottoSpring/tree/main/src/main/resources/static/docs/index.html)
-
-## Wiki
-
-- [Lotto Spring Wiki](https://github.com/BI-kotlin-in-action-2ND/HyeonminShin-LottoSpring/wiki)
-
