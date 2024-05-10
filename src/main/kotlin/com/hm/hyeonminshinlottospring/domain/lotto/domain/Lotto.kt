@@ -52,4 +52,6 @@ class Lotto(
         val intersect = this.numbers.intersect(other.numbers)
         return intersect.toList()
     }
+
+    // hello
 }
